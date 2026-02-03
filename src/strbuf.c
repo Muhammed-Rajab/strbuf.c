@@ -27,8 +27,13 @@ strbuf strbuf_new(void) {
   sb.data = malloc(sb.cap);
 
   if (!sb.data) {
-    sb.cap = 0;
-    return sb;
+    // BUG: how can i handle such cases? what's the right thing to do if there's
+    // no memory?
+    // for now, let's guarantee that sb.data is never NULL
+    sb.data = malloc(1);
+    sb.cap = sb.data ? 1 : 0;
+    if (!sb.data)
+      return sb; // truly fatal OOM
   }
 
   sb.data[0] = '\0';
