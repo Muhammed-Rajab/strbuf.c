@@ -12,4 +12,7 @@ typedef struct {
 strbuf strbuf_new(void);
 void strbuf_free(strbuf *sb);
 
+size_t strbuf_len(const strbuf *sb);
+const char *strbuf_cstr(const strbuf *sb);
+
 #endif
