@@ -173,3 +173,20 @@ strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal) {
   *equal = strncmp(a->data, b->data, a->len) == 0;
   return STRBUF_OK;
 }
+
+strbuf_err strbuf_get(strbuf *sb, int64_t index, char *ch) {
+  if (!sb || !ch)
+    return STRBUF_ERR_INVALID;
+
+  // WARN: this can cause issues if len is like bigger than i64 max value
+  int64_t ilen = (int64_t)sb->len;
+
+  if (index < -ilen || index > ilen - 1)
+    return STRBUF_ERR_RANGE;
+
+  index = index >= 0 ? index : ilen + index;
+
+  *ch = sb->data[index];
+
+  return STRBUF_OK;
+}

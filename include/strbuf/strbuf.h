@@ -54,4 +54,6 @@ strbuf_err strbuf_slice(strbuf *from, strbuf *to, size_t start, size_t stop);
 
 strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal);
 
+strbuf_err strbuf_get(strbuf *sb, int64_t index, char *ch);
+
 #endif

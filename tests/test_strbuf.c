@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -61,6 +62,16 @@ int main() {
   }
 
   printf("are slice and sb equal? %s\n", equal ? "yes" : "no");
+
+  char ch;
+  strbuf_get(&slice, 0, &ch);
+  printf("slice: ch at %d is %c\n", 0, ch);
+
+  strbuf_get(&slice, -slice.len, &ch);
+  printf("slice: ch at %ld is %c\n", (int64_t)(-slice.len), ch);
+
+  strbuf_get(&slice, -1, &ch);
+  printf("slice: ch at %d is %c\n", -1, ch);
 
   strbuf_free(&sb);
   strbuf_free(&slice);
