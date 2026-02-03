@@ -11,6 +11,11 @@ typedef enum {
   STRBUF_ERR_INVALID,
 } strbuf_err;
 
+// Invariants:
+// - sb->data is either NULL (uninitialized / freed) or points to sb->cap bytes
+// - sb->cap >= 1 if sb->data != NULL
+// - sb->len < sb->cap
+// - sb->data[sb->len] == '\0'
 typedef struct {
   char *data;
   size_t len;
@@ -27,6 +32,7 @@ const char *strbuf_cstr(const strbuf *sb);
 
 const char *strbuf_errstr(strbuf_err err);
 
+// needed is total capacity including null terminator.
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed);
 strbuf_err strbuf_clear(strbuf *sb);
 
