@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char *strbuf_errstr(strbuf_err err) {
+const char *strbuf_err_str(strbuf_err err) {
   switch (err) {
   case STRBUF_OK:
     return "ok";
