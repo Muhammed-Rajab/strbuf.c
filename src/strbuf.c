@@ -21,6 +21,9 @@ const char *strbuf_errstr(strbuf_err err) {
 }
 
 strbuf_err strbuf_init(strbuf *sb) {
+  if (!sb)
+    return STRBUF_ERR_INVALID;
+
   sb->len = 0;
   sb->cap = STRBUF_INIT_CAP;
   sb->data = malloc(sb->cap);
