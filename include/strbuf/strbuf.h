@@ -39,4 +39,6 @@ strbuf_err strbuf_clear(strbuf *sb);
 strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n);
 strbuf_err strbuf_append(strbuf *sb, const char *s);
 
+strbuf_err strbuf_push(strbuf *sb, const char ch);
+
 #endif

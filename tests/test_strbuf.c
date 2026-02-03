@@ -11,6 +11,12 @@ int main() {
     return 1;
   }
 
+  strbuf_append(&sb, "oy mate!\n");
+  strbuf_append(&sb, "are ya stoopid?");
+  strbuf_append(&sb, "12356789");
+  printf("%s\n", strbuf_cstr(&sb));
+  printf("len: %zu, cap: %zu\n", strbuf_len(&sb), sb.cap);
+
   strbuf_free(&sb);
   return EXIT_SUCCESS;
 }
