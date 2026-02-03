@@ -36,4 +36,7 @@ const char *strbuf_errstr(strbuf_err err);
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed);
 strbuf_err strbuf_clear(strbuf *sb);
 
+strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n);
+strbuf_err strbuf_append(strbuf *sb, const char *s);
+
 #endif

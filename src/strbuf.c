@@ -80,3 +80,24 @@ strbuf_err strbuf_clear(strbuf *sb) {
   sb->data[0] = '\0';
   return STRBUF_OK;
 }
+
+strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n) {
+  strbuf_err err;
+
+  if (!sb || !s)
+    return STRBUF_ERR_INVALID;
+
+  err = strbuf_reserve(sb, sb->len + n);
+  if (err != STRBUF_OK)
+    return err;
+
+  memcpy(sb->data + sb->len, s, n);
+  sb->len += n;
+  sb->data[sb->len] = '\0';
+
+  return STRBUF_OK;
+}
+
+strbuf_err strbuf_append(strbuf *sb, const char *s) {
+  return strbuf_append_n(sb, s, strlen(s));
+}
