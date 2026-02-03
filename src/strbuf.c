@@ -76,6 +76,9 @@ strbuf_err strbuf_reserve(strbuf *sb, size_t needed) {
 }
 
 strbuf_err strbuf_clear(strbuf *sb) {
+  if (!sb || !sb->data)
+    return STRBUF_ERR_INVALID;
+
   sb->len = 0;
   sb->data[0] = '\0';
   return STRBUF_OK;
@@ -87,7 +90,7 @@ strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n) {
   if (!sb || !s)
     return STRBUF_ERR_INVALID;
 
-  err = strbuf_reserve(sb, sb->len + n);
+  err = strbuf_reserve(sb, sb->len + n + 1);
   if (err != STRBUF_OK)
     return err;
 
