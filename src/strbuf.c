@@ -30,7 +30,6 @@ strbuf_err strbuf_init(strbuf *sb) {
   sb->data = malloc(sb->cap);
 
   if (!sb->data) {
-    sb->data = NULL;
     sb->cap = 0;
     sb->len = 0;
     return STRBUF_ERR_OOM;
@@ -55,14 +54,17 @@ size_t strbuf_len(const strbuf *sb) { return sb->len; }
 const char *strbuf_cstr(const strbuf *sb) { return sb->data; }
 
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed) {
+  if (!sb)
+    return STRBUF_ERR_INVALID;
+
   if (needed <= sb->cap)
     return STRBUF_OK;
 
   size_t new_cap = sb->cap ? sb->cap : 1;
   while (new_cap < needed) {
-    if (new_cap > SIZE_MAX / 2) {
+    if (new_cap > SIZE_MAX / 2)
       return STRBUF_ERR_RANGE;
-    }
+
     new_cap *= 2;
   }
 
@@ -105,7 +107,7 @@ strbuf_err strbuf_append(strbuf *sb, const char *s) {
   return strbuf_append_n(sb, s, strlen(s));
 }
 
-strbuf_err strbuf_push(strbuf *sb, const char ch) {
+strbuf_err strbuf_push(strbuf *sb, char ch) {
   strbuf_err err;
 
   if (!sb)
@@ -117,6 +119,22 @@ strbuf_err strbuf_push(strbuf *sb, const char ch) {
 
   sb->data[sb->len] = ch;
   sb->len += 1;
+  sb->data[sb->len] = '\0';
+
+  return STRBUF_OK;
+}
+
+strbuf_err strbuf_pop(strbuf *sb, char *ch) {
+  if (!sb)
+    return STRBUF_ERR_INVALID;
+
+  if (sb->len == 0)
+    return STRBUF_ERR_RANGE;
+
+  if (ch)
+    *ch = sb->data[sb->len - 1];
+
+  sb->len -= 1;
   sb->data[sb->len] = '\0';
 
   return STRBUF_OK;

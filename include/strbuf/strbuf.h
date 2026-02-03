@@ -16,6 +16,8 @@ typedef enum {
 // - sb->cap >= 1 if sb->data != NULL
 // - sb->len < sb->cap
 // - sb->data[sb->len] == '\0'
+// NOTE: ALL MUTATING FUNCTIONS REQUIRE INITIALIZED `strbuf`
+// DO THIS OR GET FUCKED.
 typedef struct {
   char *data;
   size_t len;
@@ -27,7 +29,10 @@ typedef struct {
 strbuf_err strbuf_init(strbuf *sb);
 void strbuf_free(strbuf *sb);
 
+// can be garbage if uninitialized
 size_t strbuf_len(const strbuf *sb);
+
+// can be NULL
 const char *strbuf_cstr(const strbuf *sb);
 
 const char *strbuf_errstr(strbuf_err err);
@@ -39,6 +44,7 @@ strbuf_err strbuf_clear(strbuf *sb);
 strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n);
 strbuf_err strbuf_append(strbuf *sb, const char *s);
 
-strbuf_err strbuf_push(strbuf *sb, const char ch);
+strbuf_err strbuf_push(strbuf *sb, char ch);
+strbuf_err strbuf_pop(strbuf *sb, char *ch);
 
 #endif
