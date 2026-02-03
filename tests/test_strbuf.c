@@ -9,7 +9,7 @@
   err = (fn);                                                                  \
   if (err != STRBUF_OK) {                                                      \
     fprintf(stderr, "line %d: strbuf error: %s\n", __LINE__,                   \
-            strbuf_errstr(err));                                               \
+            strbuf_err_str(err));                                              \
     exit(1);                                                                   \
   }
 

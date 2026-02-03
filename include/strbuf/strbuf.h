@@ -5,12 +5,15 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+// error handling
 typedef enum {
   STRBUF_OK = 0,
   STRBUF_ERR_OOM,
   STRBUF_ERR_RANGE,
   STRBUF_ERR_INVALID,
 } strbuf_err;
+
+const char *strbuf_err_str(strbuf_err err);
 
 // Invariants:
 // - sb->data is either NULL (uninitialized / freed) or points to sb->cap bytes
@@ -35,8 +38,6 @@ size_t strbuf_len(const strbuf *sb);
 
 // can be NULL
 const char *strbuf_cstr(const strbuf *sb);
-
-const char *strbuf_errstr(strbuf_err err);
 
 // needed is total capacity including null terminator.
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed);
