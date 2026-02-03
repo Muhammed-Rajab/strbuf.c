@@ -1,8 +1,24 @@
 #include "../include/strbuf/strbuf.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #define STRBUF_INIT_CAP 16
+
+const char *strbuf_errstr(strbuf_err err) {
+  switch (err) {
+  case STRBUF_OK:
+    return "ok";
+  case STRBUF_ERR_OOM:
+    return "out of memory";
+  case STRBUF_ERR_INVALID:
+    return "invalid argument";
+  case STRBUF_ERR_RANGE:
+    return "out of range";
+  default:
+    return "unknown error";
+  }
+}
 
 strbuf strbuf_new(void) {
   strbuf sb;
@@ -50,17 +66,8 @@ strbuf_err strbuf_reserve(strbuf *sb, size_t needed) {
   return STRBUF_OK;
 }
 
-const char *strbuf_errstr(strbuf_err err) {
-  switch (err) {
-  case STRBUF_OK:
-    return "ok";
-  case STRBUF_ERR_OOM:
-    return "out of memory";
-  case STRBUF_ERR_INVALID:
-    return "invalid argument";
-  case STRBUF_ERR_RANGE:
-    return "out of range";
-  default:
-    return "unknown error";
-  }
+strbuf_err strbuf_clear(strbuf *sb) {
+  sb->len = 0;
+  sb->data[0] = '\0';
+  return STRBUF_OK;
 }

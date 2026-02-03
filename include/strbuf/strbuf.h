@@ -26,5 +26,6 @@ const char *strbuf_cstr(const strbuf *sb);
 const char *strbuf_errstr(strbuf_err err);
 
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed);
+strbuf_err strbuf_clear(strbuf *sb);
 
 #endif
