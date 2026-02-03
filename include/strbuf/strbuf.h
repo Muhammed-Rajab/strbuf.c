@@ -1,6 +1,7 @@
 #ifndef STRBUF_H_
 #define STRBUF_H_
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 
@@ -50,5 +51,7 @@ strbuf_err strbuf_pop(strbuf *sb, char *ch);
 // to is also initialized, btw
 // to is cleared before writing the slice
 strbuf_err strbuf_slice(strbuf *from, strbuf *to, size_t start, size_t stop);
+
+strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal);
 
 #endif

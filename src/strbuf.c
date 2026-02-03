@@ -160,3 +160,16 @@ strbuf_err strbuf_slice(strbuf *sb, strbuf *to, size_t start, size_t stop) {
 
   return STRBUF_OK;
 }
+
+strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal) {
+  if (!a || !b || !equal)
+    return STRBUF_ERR_INVALID;
+
+  if (a->len != b->len) {
+    *equal = false;
+    return STRBUF_OK;
+  }
+
+  *equal = strncmp(a->data, b->data, a->len) == 0;
+  return STRBUF_OK;
+}

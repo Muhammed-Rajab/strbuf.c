@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -51,6 +52,15 @@ int main() {
 
   printf("slice: '%s'\n", strbuf_cstr(&slice));
   printf("len: %zu, cap: %zu\n", strbuf_len(&slice), slice.cap);
+
+  bool equal = false;
+  err = strbuf_cmp(&sb, &slice, &equal);
+  if (err != STRBUF_OK) {
+    fprintf(stderr, "failed to compare strbuf: %s\n", strbuf_errstr(err));
+    return 1;
+  }
+
+  printf("are slice and sb equal? %s\n", equal ? "yes" : "no");
 
   strbuf_free(&sb);
   strbuf_free(&slice);
