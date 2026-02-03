@@ -55,8 +55,7 @@ size_t strbuf_len(const strbuf *sb);
 // returns data. no NULL-check
 const char *strbuf_cstr(const strbuf *sb);
 
-// reserves more than `needed` bytes.
-// NOTE: there's no concept of `\0` here. reserve extra byte to accomodate.
+// NOTE: '\\0' is not part of the string length,
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed);
 
 // sets len = 0, data[0] = '\0', and cap is unchanged
