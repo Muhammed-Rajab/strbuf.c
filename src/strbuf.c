@@ -1,5 +1,6 @@
 #include "../include/strbuf/strbuf.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -58,8 +59,12 @@ strbuf_err strbuf_reserve(strbuf *sb, size_t needed) {
     return STRBUF_OK;
 
   size_t new_cap = sb->cap ? sb->cap : 1;
-  while (new_cap < needed)
+  while (new_cap < needed) {
+    if (new_cap > SIZE_MAX / 2) {
+      return STRBUF_ERR_RANGE;
+    }
     new_cap *= 2;
+  }
 
   char *p = (char *)realloc(sb->data, new_cap);
   if (!p)
