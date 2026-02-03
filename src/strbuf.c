@@ -37,7 +37,7 @@ strbuf_err strbuf_reserve(strbuf *sb, size_t needed) {
   if (needed <= sb->cap)
     return STRBUF_OK;
 
-  size_t new_cap = sb->cap;
+  size_t new_cap = sb->cap ? sb->cap : 1;
   while (new_cap < needed)
     new_cap *= 2;
 
