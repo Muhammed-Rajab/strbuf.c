@@ -47,4 +47,8 @@ strbuf_err strbuf_append(strbuf *sb, const char *s);
 strbuf_err strbuf_push(strbuf *sb, char ch);
 strbuf_err strbuf_pop(strbuf *sb, char *ch);
 
+// to is also initialized, btw
+// to is cleared before writing the slice
+strbuf_err strbuf_slice(strbuf *from, strbuf *to, size_t start, size_t stop);
+
 #endif

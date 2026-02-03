@@ -139,3 +139,24 @@ strbuf_err strbuf_pop(strbuf *sb, char *ch) {
 
   return STRBUF_OK;
 }
+
+strbuf_err strbuf_slice(strbuf *sb, strbuf *to, size_t start, size_t stop) {
+  strbuf_err err;
+
+  if (!sb || !to)
+    return STRBUF_ERR_INVALID;
+
+  if (!(start <= sb->len && stop >= start && stop <= sb->len))
+    return STRBUF_ERR_RANGE;
+
+  strbuf_clear(to);
+
+  size_t needed = stop - start;
+  err = strbuf_append_n(to, sb->data + start, needed);
+  if (err != STRBUF_OK)
+    return err;
+
+  to->data[needed] = '\0';
+
+  return STRBUF_OK;
+}
