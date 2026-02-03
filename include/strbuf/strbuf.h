@@ -19,8 +19,7 @@ typedef struct {
 
 // WARN: for all the methods, a valid strbuf must be passed.
 // no checking for null is implemented to keep the API clean.
-
-strbuf strbuf_new(void);
+strbuf_err strbuf_init(strbuf *sb);
 void strbuf_free(strbuf *sb);
 
 size_t strbuf_len(const strbuf *sb);

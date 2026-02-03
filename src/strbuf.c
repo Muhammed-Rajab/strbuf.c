@@ -20,24 +20,20 @@ const char *strbuf_errstr(strbuf_err err) {
   }
 }
 
-strbuf strbuf_new(void) {
-  strbuf sb;
-  sb.len = 0;
-  sb.cap = STRBUF_INIT_CAP;
-  sb.data = malloc(sb.cap);
+strbuf_err strbuf_init(strbuf *sb) {
+  sb->len = 0;
+  sb->cap = STRBUF_INIT_CAP;
+  sb->data = malloc(sb->cap);
 
-  if (!sb.data) {
-    // BUG: how can i handle such cases? what's the right thing to do if there's
-    // no memory?
-    // for now, let's guarantee that sb.data is never NULL
-    sb.data = malloc(1);
-    sb.cap = sb.data ? 1 : 0;
-    if (!sb.data)
-      return sb; // truly fatal OOM
+  if (!sb->data) {
+    sb->data = NULL;
+    sb->cap = 0;
+    sb->len = 0;
+    return STRBUF_ERR_OOM;
   }
 
-  sb.data[0] = '\0';
-  return sb;
+  sb->data[0] = '\0';
+  return STRBUF_OK;
 }
 
 void strbuf_free(strbuf *sb) {
