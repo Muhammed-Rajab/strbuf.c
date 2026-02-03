@@ -7,54 +7,83 @@
 
 // error handling
 typedef enum {
-  STRBUF_OK = 0,
-  STRBUF_ERR_OOM,
-  STRBUF_ERR_RANGE,
-  STRBUF_ERR_INVALID,
+  STRBUF_OK = 0,      // success
+  STRBUF_ERR_OOM,     // out of memory
+  STRBUF_ERR_RANGE,   // out of range
+  STRBUF_ERR_INVALID, // invalid arguments
 } strbuf_err;
 
+// strbuf_err as string
 const char *strbuf_err_str(strbuf_err err);
 
-// Invariants:
-// - sb->data is either NULL (uninitialized / freed) or points to sb->cap bytes
-// - sb->cap >= 1 if sb->data != NULL
-// - sb->len < sb->cap
-// - sb->data[sb->len] == '\0'
-// NOTE: ALL MUTATING FUNCTIONS REQUIRE INITIALIZED `strbuf`
-// DO THIS OR GET FUCKED.
+/*
+ * strbuf: i don't fuck with null terminated strings
+ *
+ * INVARIANTS:
+ * - sb->data is either NULL (uninitialized / freed) or points to sb->cap bytes
+ * - sb->cap >=STRBUF_INIT_CAP  if sb->data != NULL
+ * - sb->len < sb->cap
+ * - sb->data[sb->len] == '\0'
+ *
+ * pretty much every mutating functions require an initialized `strbuf` struct.
+ * ignore this and get fucked.
+ *
+ * every method except the following checks whether passed `strbuf` is NULL:
+ * - strbuf_cstr
+ * - strbuf_len
+ *
+ * the struct fields should not be accessed raw. `strbuf` has functions for a
+ * reason.
+ * */
+#define STRBUF_INIT_CAP 16
+
 typedef struct {
   char *data;
   size_t len;
   size_t cap;
 } strbuf;
 
-// WARN: for all the methods, a valid strbuf must be passed.
-// no checking for null is implemented to keep the API clean.
+// initialize
 strbuf_err strbuf_init(strbuf *sb);
+
+// free
 void strbuf_free(strbuf *sb);
 
-// can be garbage if uninitialized
+// returns len no NULL-check
 size_t strbuf_len(const strbuf *sb);
 
-// can be NULL
+// returns data. no NULL-check
 const char *strbuf_cstr(const strbuf *sb);
 
-// needed is total capacity including null terminator.
+// reserves more than `needed` bytes.
+// NOTE: there's no concept of `\0` here. reserve extra byte to accomodate.
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed);
+
+// sets len = 0, data[0] = '\0', and cap is unchanged
 strbuf_err strbuf_clear(strbuf *sb);
 
+// appends `n` characters from `*s` to *sb`, excluding `\0`.
+// for eg: "hello", is 5 characters, but tries to reserve 6 character space.
 strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n);
+
+// appends `*s` to `*sb`. `*s` must be NULL-terminated
 strbuf_err strbuf_append(strbuf *sb, const char *s);
 
+// pushes `ch` to the end of `*sb`
 strbuf_err strbuf_push(strbuf *sb, char ch);
+
+// pops last character from `*sb` and sets to `*ch` if ch not NULL.
 strbuf_err strbuf_pop(strbuf *sb, char *ch);
 
-// to is also initialized, btw
-// to is cleared before writing the slice
+// slices `*from` from `start` to `stop`, excluding `stop`.
+// `*from` and `*to` must be initialized.
 strbuf_err strbuf_slice(strbuf *from, strbuf *to, size_t start, size_t stop);
 
+// compares `*a` contents against `*b`. set *equal = true if EQUAL
 strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal);
 
+// character at `index` from `*sb`, set it to `*ch`.
+// NOTE: supports negative indexing
 strbuf_err strbuf_get(strbuf *sb, int64_t index, char *ch);
 
 #endif

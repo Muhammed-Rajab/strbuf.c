@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define STRBUF_INIT_CAP 16
-
 const char *strbuf_errstr(strbuf_err err) {
   switch (err) {
   case STRBUF_OK:
