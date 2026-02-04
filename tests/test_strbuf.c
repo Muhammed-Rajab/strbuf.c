@@ -1,83 +1,143 @@
-#include <stdbool.h>
-#include <stdint.h>
+/*
+ * GPT generated test, btw. I swear to god, I didn't use it
+ * to write the main library. I just don't want to write tests.
+ * */
+#include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
 #include "../include/strbuf/strbuf.h"
 
-#define RUN_AND_PRINT_IF_NOT_STRBUF_OK(fn)                                     \
-  err = (fn);                                                                  \
-  if (err != STRBUF_OK) {                                                      \
-    fprintf(stderr, "line %d: strbuf error: %s\n", __LINE__,                   \
-            strbuf_err_str(err));                                              \
-    exit(1);                                                                   \
+static void expect_ok(strbuf_err err, const char *msg) {
+  if (err != STRBUF_OK) {
+    fprintf(stderr, "FAIL: %s (%s)\n", msg, strbuf_err_str(err));
+    assert(0);
   }
+}
 
-int main() {
-  strbuf_err err;
+static void expect_true(bool cond, const char *msg) {
+  if (!cond) {
+    fprintf(stderr, "FAIL: %s\n", msg);
+    assert(0);
+  }
+}
 
-  strbuf sb;
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_init(&sb))
+int main(void) {
+  printf("=== strbuf tests ===\n");
 
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_append(&sb, "oy mate! "))
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_append(&sb, "are ya stoopid?"))
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_append(&sb, "12356789"))
+  // --------------------------------------------------
+  // init / free
+  // --------------------------------------------------
+  strbuf sb = {0};
+  expect_ok(strbuf_init(&sb), "strbuf_init");
 
-  printf("%s\n", strbuf_cstr(&sb));
-  printf("len: %zu, cap: %zu\n", strbuf_len(&sb), sb.cap);
+  expect_true(strbuf_len(&sb) == 0, "len == 0 after init");
+  expect_true(strcmp(strbuf_cstr(&sb), "") == 0, "empty string after init");
 
-  strbuf slice;
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_init(&slice))
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_slice(&sb, &slice, 0, 4))
+  // --------------------------------------------------
+  // append / append_n
+  // --------------------------------------------------
+  expect_ok(strbuf_append(&sb, "hello"), "append \"hello\"");
+  expect_true(strbuf_len(&sb) == 5, "len == 5");
+  expect_true(strcmp(strbuf_cstr(&sb), "hello") == 0, "content == hello");
 
-  printf("slice: '%s'\n", strbuf_cstr(&slice));
-  printf("len: %zu, cap: %zu\n", strbuf_len(&slice), slice.cap);
+  expect_ok(strbuf_append_n(&sb, " world!!!", 6), "append_n \" world\"");
+  expect_true(strcmp(strbuf_cstr(&sb), "hello world") == 0,
+              "content == hello world");
 
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_slice(&sb, &slice, 0, sb.len))
+  // --------------------------------------------------
+  // push / pop
+  // --------------------------------------------------
+  expect_ok(strbuf_push(&sb, '!'), "push '!'");
+  expect_true(strcmp(strbuf_cstr(&sb), "hello world!") == 0, "push worked");
 
-  printf("slice: '%s'\n", strbuf_cstr(&slice));
-  printf("len: %zu, cap: %zu\n", strbuf_len(&slice), slice.cap);
+  char ch = 0;
+  expect_ok(strbuf_pop(&sb, &ch), "pop");
+  expect_true(ch == '!', "popped '!'");
+  expect_true(strcmp(strbuf_cstr(&sb), "hello world") == 0, "pop worked");
 
-  // WARN: causes crash
-  // RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_slice(&sb, &slice, 0, sb.len + 5));
+  // --------------------------------------------------
+  // get (positive and negative indexing)
+  // --------------------------------------------------
+  expect_ok(strbuf_get(&sb, 0, &ch), "get index 0");
+  expect_true(ch == 'h', "index 0 == h");
 
-  printf("slice: '%s'\n", strbuf_cstr(&slice));
-  printf("len: %zu, cap: %zu\n", strbuf_len(&slice), slice.cap);
+  expect_ok(strbuf_get(&sb, -1, &ch), "get index -1");
+  expect_true(ch == 'd', "index -1 == d");
 
-  bool equal = strbuf_cmp(&sb, &slice);
-  printf("are slice and sb equal? %s\n", equal ? "yes" : "no");
+  // --------------------------------------------------
+  // reserve (implicit test via growth)
+  // --------------------------------------------------
+  size_t old_cap = sb.cap;
+  expect_ok(strbuf_reserve(&sb, old_cap * 4), "reserve larger capacity");
+  expect_true(sb.cap >= old_cap * 4, "capacity grew");
 
-  char ch;
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_get(&slice, 0, &ch))
-  printf("slice: ch at %d is %c\n", 0, ch);
+  // --------------------------------------------------
+  // clear
+  // --------------------------------------------------
+  expect_ok(strbuf_clear(&sb), "clear");
+  expect_true(strbuf_len(&sb) == 0, "len == 0 after clear");
+  expect_true(strcmp(strbuf_cstr(&sb), "") == 0, "empty after clear");
 
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_get(&slice, -slice.len, &ch))
-  printf("slice: ch at %ld is %c\n", (int64_t)(-slice.len), ch);
+  // --------------------------------------------------
+  // from_strlit
+  // --------------------------------------------------
+  strbuf sb2 = {0};
+  expect_ok(strbuf_from_strlit(&sb2, "abcdef"), "from_strlit");
+  expect_true(strcmp(strbuf_cstr(&sb2), "abcdef") == 0, "from_strlit content");
 
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_get(&slice, -1, &ch))
-  printf("slice: ch at %d is %c\n", -1, ch);
+  // --------------------------------------------------
+  // slice
+  // --------------------------------------------------
+  strbuf slice = {0};
+  expect_ok(strbuf_init(&slice), "init slice");
+  expect_ok(strbuf_slice(&sb2, &slice, 1, 4), "slice [1,4)");
+  expect_true(strcmp(strbuf_cstr(&slice), "bcd") == 0, "slice content");
 
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_reverse(&slice))
-  printf("reversed slice is: '%s'\n", strbuf_cstr(&slice));
+  // --------------------------------------------------
+  // copy
+  // --------------------------------------------------
+  strbuf copy = {0};
+  expect_ok(strbuf_init(&copy), "init copy");
+  expect_ok(strbuf_copy(&slice, &copy), "copy");
+  expect_true(strbuf_cmp(&slice, &copy), "copy equals source");
 
-  strbuf new;
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_init(&new))
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_copy(&slice, &new))
+  // --------------------------------------------------
+  // cmp / cmp_cstr
+  // --------------------------------------------------
+  expect_true(strbuf_cmp(&sb2, &sb2), "cmp same buffer");
+  expect_true(strbuf_cmp_cstr(&sb2, "abcdef"), "cmp_cstr matches");
+  expect_true(!strbuf_cmp_cstr(&sb2, "abcdeg"), "cmp_cstr mismatch");
 
-  printf("slice: '%s'\n", strbuf_cstr(&slice));
-  printf("new: '%s'\n", strbuf_cstr(&new));
+  // --------------------------------------------------
+  // reverse
+  // --------------------------------------------------
+  expect_ok(strbuf_reverse(&sb2), "reverse");
+  expect_true(strcmp(strbuf_cstr(&sb2), "fedcba") == 0, "reverse worked");
 
-  strbuf name = {0};
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_from_strlit(&name, "Rajab Kabeer"))
-  printf("name: '%s'\n", strbuf_cstr(&name));
+  // --------------------------------------------------
+  // append_repeated_char
+  // --------------------------------------------------
+  expect_ok(strbuf_clear(&sb2), "clear sb2");
+  expect_ok(strbuf_append_repeated_char(&sb2, 'x', 5), "append_repeated_char");
+  expect_true(strcmp(strbuf_cstr(&sb2), "xxxxx") == 0, "repeated char append");
 
-  const char *name_lit = "Rajab Kabeer";
-  printf("is name equal to name_lit? %s\n",
-         strbuf_cmp_cstr(&name, name_lit) ? "yes" : "no");
+  // --------------------------------------------------
+  // repeat_char (constructor)
+  // --------------------------------------------------
+  strbuf sb3 = {0};
+  expect_ok(strbuf_repeat_char(&sb3, 'z', 3), "repeat_char");
+  expect_true(strcmp(strbuf_cstr(&sb3), "zzz") == 0, "repeat_char content");
 
+  // --------------------------------------------------
+  // cleanup
+  // --------------------------------------------------
   strbuf_free(&sb);
+  strbuf_free(&sb2);
   strbuf_free(&slice);
-  strbuf_free(&new);
-  strbuf_free(&name);
-  return EXIT_SUCCESS;
+  strbuf_free(&copy);
+  strbuf_free(&sb3);
+
+  printf("All tests passed ✅\n");
+  return 0;
 }
