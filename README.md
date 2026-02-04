@@ -13,3 +13,5 @@ well, it is time for me to grow a pair of man and write my own string library li
 - [x] inplace reversed string
 - [x] copy string
 - [x] from string literal 
+- [ ] repeat char n times
+- [ ] compare with cstr

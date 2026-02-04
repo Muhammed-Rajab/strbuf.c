@@ -260,3 +260,44 @@ strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit) {
 
   return STRBUF_OK;
 }
+
+strbuf_err strbuf_append_repeated_char(strbuf *sb, char ch, size_t n) {
+  STRBUF_REQUIRE_INIT(sb);
+
+  strbuf_err err;
+
+  err = strbuf_reserve(sb, sb->len + n + 1);
+  if (err != STRBUF_OK)
+    return err;
+
+  memset(sb->data + sb->len, ch, n);
+
+  sb->len += n;
+
+  sb->data[sb->len] = '\0';
+
+  return STRBUF_OK;
+}
+
+// NOTE: `*sb` should either be ZERO-INITIALIZED or PREVIOUSLY FREED.
+strbuf_err strbuf_repeat_char(strbuf *sb, char ch, size_t n) {
+  if (!sb)
+    return STRBUF_ERR_INVALID;
+
+  strbuf_err err;
+  err = strbuf_init(sb);
+  if (err != STRBUF_OK)
+    return err;
+
+  err = strbuf_reserve(sb, n + 1);
+  if (err != STRBUF_OK) {
+    strbuf_free(sb);
+    return err;
+  }
+
+  memset(sb->data, ch, n);
+  sb->len = n;
+  sb->data[sb->len] = '\0';
+
+  return STRBUF_OK;
+}

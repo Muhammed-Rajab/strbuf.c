@@ -83,6 +83,7 @@ strbuf_err strbuf_clear(strbuf *sb);
 
 // appends `n` characters from `*s` to *sb`, excluding `\0`.
 // for eg: "hello", is 5 characters, but tries to reserve 6 character space.
+// NOTE: strlen(s) must be >= n
 strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n);
 
 // appends `*s` to `*sb`. `*s` must be NULL-terminated.
@@ -114,5 +115,12 @@ strbuf_err strbuf_copy(const strbuf *src, strbuf *dst);
 // constructs `*sb` from `*lit`.
 // NOTE: `*sb` should either be ZERO-INITIALIZED or PREVIOUSLY FREED.
 strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit);
+
+// appends`ch` to `*sb` `n` times.
+strbuf_err strbuf_append_repeated_char(strbuf *sb, char ch, size_t n);
+
+// constructs *sb with `ch` `n` times.
+// NOTE: `*sb` should either be ZERO-INITIALIZED or PREVIOUSLY FREED.
+strbuf_err strbuf_repeat_char(strbuf *sb, char ch, size_t n);
 
 #endif
