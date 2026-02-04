@@ -1,3 +1,4 @@
+
 #include "../include/strbuf/strbuf.h"
 
 #include <stddef.h>
@@ -5,7 +6,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-//
+#define STRBUF_REQUIRE_INIT(sb)                                                \
+  do {                                                                         \
+    if (!(sb) || !(sb)->data)                                                  \
+      return STRBUF_ERR_INVALID;                                               \
+  } while (0)
+
 const char *strbuf_err_str(strbuf_err err) {
   switch (err) {
   case STRBUF_OK:
@@ -54,8 +60,7 @@ size_t strbuf_len(const strbuf *sb) { return sb->len; }
 const char *strbuf_cstr(const strbuf *sb) { return sb->data; }
 
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed) {
-  if (!sb)
-    return STRBUF_ERR_INVALID;
+  STRBUF_REQUIRE_INIT(sb);
 
   if (needed <= sb->cap)
     return STRBUF_OK;
@@ -78,8 +83,7 @@ strbuf_err strbuf_reserve(strbuf *sb, size_t needed) {
 }
 
 strbuf_err strbuf_clear(strbuf *sb) {
-  if (!sb || !sb->data)
-    return STRBUF_ERR_INVALID;
+  STRBUF_REQUIRE_INIT(sb);
 
   sb->len = 0;
   sb->data[0] = '\0';
@@ -87,10 +91,12 @@ strbuf_err strbuf_clear(strbuf *sb) {
 }
 
 strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n) {
-  strbuf_err err;
+  STRBUF_REQUIRE_INIT(sb);
 
-  if (!sb || !s)
+  if (!s)
     return STRBUF_ERR_INVALID;
+
+  strbuf_err err;
 
   err = strbuf_reserve(sb, sb->len + n + 1);
   if (err != STRBUF_OK)
@@ -108,10 +114,9 @@ strbuf_err strbuf_append(strbuf *sb, const char *s) {
 }
 
 strbuf_err strbuf_push(strbuf *sb, char ch) {
-  strbuf_err err;
+  STRBUF_REQUIRE_INIT(sb);
 
-  if (!sb)
-    return STRBUF_ERR_INVALID;
+  strbuf_err err;
 
   err = strbuf_reserve(sb, sb->len + 2); // 1 for ch and 1 for \0
   if (err != STRBUF_OK)
@@ -125,8 +130,7 @@ strbuf_err strbuf_push(strbuf *sb, char ch) {
 }
 
 strbuf_err strbuf_pop(strbuf *sb, char *ch) {
-  if (!sb)
-    return STRBUF_ERR_INVALID;
+  STRBUF_REQUIRE_INIT(sb);
 
   if (sb->len == 0)
     return STRBUF_ERR_RANGE;
@@ -141,10 +145,10 @@ strbuf_err strbuf_pop(strbuf *sb, char *ch) {
 }
 
 strbuf_err strbuf_slice(strbuf *sb, strbuf *to, size_t start, size_t stop) {
-  strbuf_err err;
+  STRBUF_REQUIRE_INIT(sb);
+  STRBUF_REQUIRE_INIT(to);
 
-  if (!sb || !to)
-    return STRBUF_ERR_INVALID;
+  strbuf_err err;
 
   if (!(start <= sb->len && stop >= start && stop <= sb->len))
     return STRBUF_ERR_RANGE;
@@ -160,7 +164,10 @@ strbuf_err strbuf_slice(strbuf *sb, strbuf *to, size_t start, size_t stop) {
 }
 
 strbuf_err strbuf_cmp(const strbuf *a, const strbuf *b, bool *equal) {
-  if (!a || !b || !equal)
+  STRBUF_REQUIRE_INIT(a);
+  STRBUF_REQUIRE_INIT(b);
+
+  if (!equal)
     return STRBUF_ERR_INVALID;
 
   if (a->len != b->len) {
@@ -173,10 +180,14 @@ strbuf_err strbuf_cmp(const strbuf *a, const strbuf *b, bool *equal) {
 }
 
 strbuf_err strbuf_get(const strbuf *sb, int64_t index, char *ch) {
-  if (!sb || !ch)
+  STRBUF_REQUIRE_INIT(sb);
+
+  if (!ch)
     return STRBUF_ERR_INVALID;
 
   // WARN: this can cause issues if len is like bigger than i64 max value
+  if (sb->len > INT64_MAX)
+    return STRBUF_ERR_RANGE;
   int64_t ilen = (int64_t)sb->len;
 
   if (index < -ilen || index > ilen - 1)
@@ -190,8 +201,7 @@ strbuf_err strbuf_get(const strbuf *sb, int64_t index, char *ch) {
 }
 
 strbuf_err strbuf_reverse(strbuf *sb) {
-  if (!sb)
-    return STRBUF_ERR_INVALID;
+  STRBUF_REQUIRE_INIT(sb);
 
   // you don't have to reverse a string of len 1 or 0
   if (sb->len <= 1)
@@ -212,9 +222,9 @@ strbuf_err strbuf_reverse(strbuf *sb) {
   return STRBUF_OK;
 }
 
-strbuf_err strbuf_copy(strbuf *sb, strbuf *dst) {
-  if (!sb || !dst)
-    return STRBUF_ERR_INVALID;
+strbuf_err strbuf_copy(strbuf *src, strbuf *dst) {
+  STRBUF_REQUIRE_INIT(src);
+  STRBUF_REQUIRE_INIT(dst);
 
   strbuf_err err;
 
@@ -222,7 +232,7 @@ strbuf_err strbuf_copy(strbuf *sb, strbuf *dst) {
   if (err != STRBUF_OK)
     return err;
 
-  err = strbuf_append_n(dst, sb->data, sb->len);
+  err = strbuf_append_n(dst, src->data, src->len);
   if (err != STRBUF_OK)
     return err;
 
@@ -230,7 +240,9 @@ strbuf_err strbuf_copy(strbuf *sb, strbuf *dst) {
 }
 
 strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit) {
-  if (!sb || !lit)
+  STRBUF_REQUIRE_INIT(sb);
+
+  if (!lit)
     return STRBUF_ERR_INVALID;
 
   strbuf_err err;
