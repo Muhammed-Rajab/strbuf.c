@@ -144,19 +144,19 @@ strbuf_err strbuf_pop(strbuf *sb, char *ch) {
   return STRBUF_OK;
 }
 
-strbuf_err strbuf_slice(strbuf *sb, strbuf *to, size_t start, size_t stop) {
-  STRBUF_REQUIRE_INIT(sb);
+strbuf_err strbuf_slice(strbuf *from, strbuf *to, size_t start, size_t stop) {
+  STRBUF_REQUIRE_INIT(from);
   STRBUF_REQUIRE_INIT(to);
 
   strbuf_err err;
 
-  if (!(start <= sb->len && stop >= start && stop <= sb->len))
+  if (!(start <= from->len && stop >= start && stop <= from->len))
     return STRBUF_ERR_RANGE;
 
   strbuf_clear(to);
 
   size_t needed = stop - start;
-  err = strbuf_append_n(to, sb->data + start, needed);
+  err = strbuf_append_n(to, from->data + start, needed);
   if (err != STRBUF_OK)
     return err;
 
