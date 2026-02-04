@@ -5,7 +5,6 @@
 #include <string.h>
 
 // macros
-#define STRBUF_INIT_CAP 16
 
 #define STRBUF_REQUIRE_INIT(sb)                                                \
   do {                                                                         \

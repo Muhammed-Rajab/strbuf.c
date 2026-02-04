@@ -54,6 +54,8 @@ const char *strbuf_err_str(strbuf_err err);
 // STRBUF
 //----------------------------------------------------------
 
+#define STRBUF_INIT_CAP 16
+
 typedef struct {
   char *data;
   size_t len;
