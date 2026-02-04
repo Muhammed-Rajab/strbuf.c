@@ -229,3 +229,20 @@ strbuf_err strbuf_cpy(strbuf *sb, strbuf *dst) {
 
   return STRBUF_OK;
 }
+
+strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit) {
+  if (!sb || !lit)
+    return STRBUF_ERR_INVALID;
+
+  strbuf_err err;
+
+  err = strbuf_init(sb);
+  if (err != STRBUF_OK)
+    return err;
+
+  err = strbuf_append(sb, lit);
+  if (err != STRBUF_OK)
+    return err;
+
+  return STRBUF_OK;
+}

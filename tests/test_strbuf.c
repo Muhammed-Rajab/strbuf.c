@@ -69,8 +69,13 @@ int main() {
   printf("slice: '%s'\n", strbuf_cstr(&slice));
   printf("new: '%s'\n", strbuf_cstr(&new));
 
+  strbuf name;
+  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_from_strlit(&name, "Rajab Kabeer"))
+  printf("name: '%s'\n", strbuf_cstr(&name));
+
   strbuf_free(&sb);
   strbuf_free(&slice);
   strbuf_free(&new);
+  strbuf_free(&name);
   return EXIT_SUCCESS;
 }

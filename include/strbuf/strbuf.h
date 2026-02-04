@@ -88,7 +88,11 @@ strbuf_err strbuf_get(strbuf *sb, int64_t index, char *ch);
 // reverse `*sb` in place.
 strbuf_err strbuf_reverse(strbuf *sb);
 
-// copies `*sb` to `*dest`. `*dest` should be intialised.
+// copies `*sb` to `*dest`. `*dest` must be intialised.
 strbuf_err strbuf_cpy(strbuf *sb, strbuf *dst);
+
+// constructs `*sb` from `*lit`.
+// NOTE: `*sb` SHOULD NOT BE INITIALISED.
+strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit);
 
 #endif
