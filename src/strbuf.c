@@ -1,5 +1,6 @@
 #include "../include/strbuf/strbuf.h"
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -185,6 +186,29 @@ strbuf_err strbuf_get(strbuf *sb, int64_t index, char *ch) {
   index = index >= 0 ? index : ilen + index;
 
   *ch = sb->data[index];
+
+  return STRBUF_OK;
+}
+
+strbuf_err strbuf_reverse(strbuf *sb) {
+  if (!sb)
+    return STRBUF_ERR_INVALID;
+
+  // you don't have to reverse a string of len 1 or 0
+  if (sb->len <= 1)
+    return STRBUF_OK;
+
+  // truncates floating part
+  size_t half = sb->len / 2;
+
+  for (size_t i = 0; i < half; i += 1) {
+    // index of the last char
+    size_t ni = sb->len - 1 - i;
+
+    char tmp = sb->data[i];
+    sb->data[i] = sb->data[ni];
+    sb->data[ni] = tmp;
+  }
 
   return STRBUF_OK;
 }

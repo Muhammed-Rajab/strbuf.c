@@ -59,6 +59,9 @@ int main() {
   RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_get(&slice, -1, &ch));
   printf("slice: ch at %d is %c\n", -1, ch);
 
+  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_reverse(&slice))
+  printf("reversed slice is: '%s'\n", strbuf_cstr(&slice));
+
   strbuf_free(&sb);
   strbuf_free(&slice);
   return EXIT_SUCCESS;

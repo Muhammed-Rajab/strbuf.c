@@ -85,4 +85,7 @@ strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal);
 // NOTE: supports negative indexing
 strbuf_err strbuf_get(strbuf *sb, int64_t index, char *ch);
 
+// reverse `*sb` in place
+strbuf_err strbuf_reverse(strbuf *sb);
+
 #endif
