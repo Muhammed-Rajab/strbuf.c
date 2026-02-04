@@ -165,20 +165,22 @@ strbuf_err strbuf_slice(strbuf *from, strbuf *to, size_t start, size_t stop) {
   return STRBUF_OK;
 }
 
-strbuf_err strbuf_cmp(const strbuf *a, const strbuf *b, bool *equal) {
-  STRBUF_REQUIRE_INIT(a);
-  STRBUF_REQUIRE_INIT(b);
+bool strbuf_cmp(const strbuf *a, const strbuf *b) {
+  if (!a || !b || !a->data || !b->data)
+    return false;
 
-  if (!equal)
-    return STRBUF_ERR_INVALID;
+  return a->len == b->len && memcmp(a->data, b->data, a->len) == 0;
+}
 
-  if (a->len != b->len) {
-    *equal = false;
-    return STRBUF_OK;
-  }
+bool strbuf_cmp_cstr(const strbuf *sb, const char *lit) {
+  if (!sb || !sb->data || !lit)
+    return false;
 
-  *equal = memcmp(a->data, b->data, a->len) == 0;
-  return STRBUF_OK;
+  if (sb->len == 0)
+    return *lit == '\0';
+
+  size_t n = strlen(lit);
+  return sb->len == n && memcmp(sb->data, lit, n) == 0;
 }
 
 strbuf_err strbuf_get(const strbuf *sb, int64_t index, char *ch) {

@@ -99,8 +99,13 @@ strbuf_err strbuf_pop(strbuf *sb, char *ch);
 // `*from` and `*to` must be initialized.
 strbuf_err strbuf_slice(strbuf *from, strbuf *to, size_t start, size_t stop);
 
-// compares `*a` contents against `*b`. set *equal = true if EQUAL
-strbuf_err strbuf_cmp(const strbuf *a, const strbuf *b, bool *equal);
+// compares `*a` contents against `*b`
+// invalid arguments returns false
+bool strbuf_cmp(const strbuf *a, const strbuf *b);
+
+// compares `*sb` contents against `*lit`.
+// invalid arguments returns false
+bool strbuf_cmp_cstr(const strbuf *sb, const char *lit);
 
 // character at `index` from `*sb`, set it to `*ch`.
 // NOTE: supports negative indexing. index=-1, means last character
