@@ -10,5 +10,5 @@ for such a great programming language, C is shockingly bad at string handling. i
 well, it is time for me to grow a pair of man and write my own string library like a balls. i'm not aiming for anything super efficient or clean, for that matter. i need something that works that does not rely on prayers, with proper documentation, so i can steal it for my future projects too.
 
 ### TODOs
-- [ ] inplace reversed string
+- [x] inplace reversed string
 - [ ] duplicate string
