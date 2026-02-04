@@ -69,7 +69,7 @@ int main() {
   printf("slice: '%s'\n", strbuf_cstr(&slice));
   printf("new: '%s'\n", strbuf_cstr(&new));
 
-  strbuf name;
+  strbuf name = {0};
   RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_from_strlit(&name, "Rajab Kabeer"))
   printf("name: '%s'\n", strbuf_cstr(&name));
 

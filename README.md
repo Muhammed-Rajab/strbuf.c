@@ -12,4 +12,4 @@ well, it is time for me to grow a pair of man and write my own string library li
 ### TODOs
 - [x] inplace reversed string
 - [x] copy string
-- [ ] from string literal 
+- [x] from string literal 

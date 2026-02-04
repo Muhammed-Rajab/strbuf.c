@@ -92,7 +92,7 @@ strbuf_err strbuf_reverse(strbuf *sb);
 strbuf_err strbuf_cpy(strbuf *sb, strbuf *dst);
 
 // constructs `*sb` from `*lit`.
-// NOTE: `*sb` SHOULD NOT BE INITIALISED.
+// NOTE: `*sb` MUST NOT BE INITIALISED.
 strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit);
 
 #endif
