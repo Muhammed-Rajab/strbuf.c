@@ -212,3 +212,20 @@ strbuf_err strbuf_reverse(strbuf *sb) {
 
   return STRBUF_OK;
 }
+
+strbuf_err strbuf_cpy(strbuf *sb, strbuf *dst) {
+  if (!sb || !dst)
+    return STRBUF_ERR_INVALID;
+
+  strbuf_err err;
+
+  err = strbuf_clear(dst);
+  if (err != STRBUF_OK)
+    return err;
+
+  err = strbuf_append_n(dst, sb->data, sb->len);
+  if (err != STRBUF_OK)
+    return err;
+
+  return STRBUF_OK;
+}

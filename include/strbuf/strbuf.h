@@ -49,26 +49,26 @@ strbuf_err strbuf_init(strbuf *sb);
 // free
 void strbuf_free(strbuf *sb);
 
-// returns len no NULL-check
+// returns len no NULL-check.
 size_t strbuf_len(const strbuf *sb);
 
-// returns data. no NULL-check
+// returns data. no NULL-check.
 const char *strbuf_cstr(const strbuf *sb);
 
-// NOTE: '\\0' is not part of the string length,
+// NOTE: '\\0' is not part of the string length.
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed);
 
-// sets len = 0, data[0] = '\0', and cap is unchanged
+// sets len = 0, data[0] = '\0', and cap is unchanged.
 strbuf_err strbuf_clear(strbuf *sb);
 
 // appends `n` characters from `*s` to *sb`, excluding `\0`.
 // for eg: "hello", is 5 characters, but tries to reserve 6 character space.
 strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n);
 
-// appends `*s` to `*sb`. `*s` must be NULL-terminated
+// appends `*s` to `*sb`. `*s` must be NULL-terminated.
 strbuf_err strbuf_append(strbuf *sb, const char *s);
 
-// pushes `ch` to the end of `*sb`
+// pushes `ch` to the end of `*sb`.
 strbuf_err strbuf_push(strbuf *sb, char ch);
 
 // pops last character from `*sb` and sets to `*ch` if ch not NULL.
@@ -85,7 +85,10 @@ strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal);
 // NOTE: supports negative indexing
 strbuf_err strbuf_get(strbuf *sb, int64_t index, char *ch);
 
-// reverse `*sb` in place
+// reverse `*sb` in place.
 strbuf_err strbuf_reverse(strbuf *sb);
+
+// copies `*sb` to `*dest`. `*dest` should be intialised.
+strbuf_err strbuf_cpy(strbuf *sb, strbuf *dst);
 
 #endif
