@@ -1,4 +1,3 @@
-
 #include "../include/strbuf/strbuf.h"
 
 #include <stddef.h>
@@ -240,9 +239,7 @@ strbuf_err strbuf_copy(strbuf *src, strbuf *dst) {
 }
 
 strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit) {
-  STRBUF_REQUIRE_INIT(sb);
-
-  if (!lit)
+  if (!sb || !lit)
     return STRBUF_ERR_INVALID;
 
   strbuf_err err;
