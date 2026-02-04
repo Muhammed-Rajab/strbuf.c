@@ -44,9 +44,7 @@ int main() {
   printf("slice: '%s'\n", strbuf_cstr(&slice));
   printf("len: %zu, cap: %zu\n", strbuf_len(&slice), slice.cap);
 
-  bool equal = false;
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_cmp(&sb, &slice, &equal))
-
+  bool equal = strbuf_cmp(&sb, &slice);
   printf("are slice and sb equal? %s\n", equal ? "yes" : "no");
 
   char ch;
@@ -72,6 +70,10 @@ int main() {
   strbuf name = {0};
   RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_from_strlit(&name, "Rajab Kabeer"))
   printf("name: '%s'\n", strbuf_cstr(&name));
+
+  const char *name_lit = "Rajab Kabeer";
+  printf("is name equal to name_lit? %s\n",
+         strbuf_cmp_cstr(&name, name_lit) ? "yes" : "no");
 
   strbuf_free(&sb);
   strbuf_free(&slice);
