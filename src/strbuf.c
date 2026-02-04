@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+//
 const char *strbuf_err_str(strbuf_err err) {
   switch (err) {
   case STRBUF_OK:
@@ -59,7 +60,7 @@ strbuf_err strbuf_reserve(strbuf *sb, size_t needed) {
   if (needed <= sb->cap)
     return STRBUF_OK;
 
-  size_t new_cap = sb->cap ? sb->cap : 1;
+  size_t new_cap = sb->cap ? sb->cap : STRBUF_INIT_CAP;
   while (new_cap < needed) {
     if (new_cap > SIZE_MAX / 2)
       return STRBUF_ERR_RANGE;
@@ -77,7 +78,7 @@ strbuf_err strbuf_reserve(strbuf *sb, size_t needed) {
 }
 
 strbuf_err strbuf_clear(strbuf *sb) {
-  if (!sb)
+  if (!sb || !sb->data)
     return STRBUF_ERR_INVALID;
 
   sb->len = 0;
@@ -155,12 +156,10 @@ strbuf_err strbuf_slice(strbuf *sb, strbuf *to, size_t start, size_t stop) {
   if (err != STRBUF_OK)
     return err;
 
-  to->data[needed] = '\0';
-
   return STRBUF_OK;
 }
 
-strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal) {
+strbuf_err strbuf_cmp(const strbuf *a, const strbuf *b, bool *equal) {
   if (!a || !b || !equal)
     return STRBUF_ERR_INVALID;
 
@@ -169,11 +168,11 @@ strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal) {
     return STRBUF_OK;
   }
 
-  *equal = strncmp(a->data, b->data, a->len) == 0;
+  *equal = memcmp(a->data, b->data, a->len) == 0;
   return STRBUF_OK;
 }
 
-strbuf_err strbuf_get(strbuf *sb, int64_t index, char *ch) {
+strbuf_err strbuf_get(const strbuf *sb, int64_t index, char *ch) {
   if (!sb || !ch)
     return STRBUF_ERR_INVALID;
 
@@ -213,7 +212,7 @@ strbuf_err strbuf_reverse(strbuf *sb) {
   return STRBUF_OK;
 }
 
-strbuf_err strbuf_cpy(strbuf *sb, strbuf *dst) {
+strbuf_err strbuf_copy(strbuf *sb, strbuf *dst) {
   if (!sb || !dst)
     return STRBUF_ERR_INVALID;
 
@@ -241,8 +240,10 @@ strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit) {
     return err;
 
   err = strbuf_append(sb, lit);
-  if (err != STRBUF_OK)
+  if (err != STRBUF_OK) {
+    strbuf_free(sb);
     return err;
+  }
 
   return STRBUF_OK;
 }

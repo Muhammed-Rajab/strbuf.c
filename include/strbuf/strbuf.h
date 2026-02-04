@@ -79,17 +79,17 @@ strbuf_err strbuf_pop(strbuf *sb, char *ch);
 strbuf_err strbuf_slice(strbuf *from, strbuf *to, size_t start, size_t stop);
 
 // compares `*a` contents against `*b`. set *equal = true if EQUAL
-strbuf_err strbuf_cmp(strbuf *a, strbuf *b, bool *equal);
+strbuf_err strbuf_cmp(const strbuf *a, const strbuf *b, bool *equal);
 
 // character at `index` from `*sb`, set it to `*ch`.
-// NOTE: supports negative indexing
-strbuf_err strbuf_get(strbuf *sb, int64_t index, char *ch);
+// NOTE: supports negative indexing. index=-1, means last character
+strbuf_err strbuf_get(const strbuf *sb, int64_t index, char *ch);
 
 // reverse `*sb` in place.
 strbuf_err strbuf_reverse(strbuf *sb);
 
 // copies `*sb` to `*dest`. `*dest` must be intialised.
-strbuf_err strbuf_cpy(strbuf *sb, strbuf *dst);
+strbuf_err strbuf_copy(strbuf *sb, strbuf *dst);
 
 // constructs `*sb` from `*lit`.
 // NOTE: `*sb` MUST NOT BE INITIALISED.

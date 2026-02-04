@@ -64,7 +64,7 @@ int main() {
 
   strbuf new;
   RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_init(&new))
-  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_cpy(&slice, &new))
+  RUN_AND_PRINT_IF_NOT_STRBUF_OK(strbuf_copy(&slice, &new))
 
   printf("slice: '%s'\n", strbuf_cstr(&slice));
   printf("new: '%s'\n", strbuf_cstr(&new));
