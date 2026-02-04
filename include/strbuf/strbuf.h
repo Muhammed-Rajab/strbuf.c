@@ -3,13 +3,17 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdlib.h>
+#include <stdint.h>
 
 /*
- * strbuf: i don't fuck with null terminated strings
+ * strbuf: length-based string buffer with a guaranteed trailing '\0'
+ *
+ *  i don't *rely* on null-terminated strings,
+ *  but i keep one for interop and sanity.
  *
  * INVARIANTS:
- * - sb->data is either NULL (uninitialized / freed) or points to sb->cap bytes
+ * - sb->data is either NULL (zero-initialized/ freed) or points to sb->cap
+ *    bytes
  * - sb->cap >=STRBUF_INIT_CAP  if sb->data != NULL
  * - sb->len < sb->cap
  * - sb->data[sb->len] == '\0'
@@ -68,7 +72,7 @@ size_t strbuf_len(const strbuf *sb);
 // returns sb->data. no NULL-check.
 const char *strbuf_cstr(const strbuf *sb);
 
-// reserves more than `needed` bytes for `*sb`
+// ensures capacity for at least `needed` bytes (including space for '\0')
 // NOTE: when reserving, make sure to account for `\0`
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed);
 
@@ -103,7 +107,7 @@ strbuf_err strbuf_get(const strbuf *sb, int64_t index, char *ch);
 strbuf_err strbuf_reverse(strbuf *sb);
 
 // copies `*sb` to `*dest`. `*dest` must be intialised.
-strbuf_err strbuf_copy(strbuf *src, strbuf *dst);
+strbuf_err strbuf_copy(const strbuf *src, strbuf *dst);
 
 // constructs `*sb` from `*lit`.
 // NOTE: `*sb` should either be ZERO-INITIALIZED or PREVIOUSLY FREED.

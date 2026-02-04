@@ -1,7 +1,6 @@
 #include "../include/strbuf/strbuf.h"
 
 #include <stddef.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -224,7 +223,7 @@ strbuf_err strbuf_reverse(strbuf *sb) {
   return STRBUF_OK;
 }
 
-strbuf_err strbuf_copy(strbuf *src, strbuf *dst) {
+strbuf_err strbuf_copy(const strbuf *src, strbuf *dst) {
   STRBUF_REQUIRE_INIT(src);
   STRBUF_REQUIRE_INIT(dst);
 
