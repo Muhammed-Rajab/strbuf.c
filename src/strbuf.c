@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+// macros
+#define STRBUF_INIT_CAP 16
+
 #define STRBUF_REQUIRE_INIT(sb)                                                \
   do {                                                                         \
     if (!(sb) || !(sb)->data)                                                  \
@@ -238,6 +241,7 @@ strbuf_err strbuf_copy(strbuf *src, strbuf *dst) {
   return STRBUF_OK;
 }
 
+// NOTE: `*sb` should either be ZERO-INITIALIZED or PREVIOUSLY FREED.
 strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit) {
   if (!sb || !lit)
     return STRBUF_ERR_INVALID;

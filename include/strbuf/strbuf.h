@@ -5,17 +5,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-// error handling
-typedef enum {
-  STRBUF_OK = 0,      // success
-  STRBUF_ERR_OOM,     // out of memory
-  STRBUF_ERR_RANGE,   // out of range
-  STRBUF_ERR_INVALID, // invalid arguments
-} strbuf_err;
-
-// strbuf_err as string
-const char *strbuf_err_str(strbuf_err err);
-
 /*
  * strbuf: i don't fuck with null terminated strings
  *
@@ -24,6 +13,13 @@ const char *strbuf_err_str(strbuf_err err);
  * - sb->cap >=STRBUF_INIT_CAP  if sb->data != NULL
  * - sb->len < sb->cap
  * - sb->data[sb->len] == '\0'
+ *
+ * `strbuf` LIFECYCLE:
+ *    1. zero-initialize (e.g. `strbuf sb = {0};`)
+ *    2. initialize via `strbuf_init` or `strbuf_from_strlit`
+ *    3. use
+ *    4. `strbuf_free`
+ *    5. repeat from 1 or 2
  *
  * pretty much every mutating functions require an initialized `strbuf` struct.
  * ignore this and get fucked.
@@ -35,7 +31,24 @@ const char *strbuf_err_str(strbuf_err err);
  * the struct fields should not be accessed raw. `strbuf` has functions for a
  * reason.
  * */
-#define STRBUF_INIT_CAP 16
+
+//----------------------------------------------------------
+// STRBUF_ERR
+//----------------------------------------------------------
+
+typedef enum {
+  STRBUF_OK = 0,      // success
+  STRBUF_ERR_OOM,     // out of memory
+  STRBUF_ERR_RANGE,   // out of range
+  STRBUF_ERR_INVALID, // invalid arguments
+} strbuf_err;
+
+// returns strbuf_err as string.
+const char *strbuf_err_str(strbuf_err err);
+
+//----------------------------------------------------------
+// STRBUF
+//----------------------------------------------------------
 
 typedef struct {
   char *data;
@@ -43,19 +56,20 @@ typedef struct {
   size_t cap;
 } strbuf;
 
-// initialize
+// initialize a ZERO-INITIALIZED or PREVIOUSLY FREED strbuf.
 strbuf_err strbuf_init(strbuf *sb);
 
-// free
+// free a strbuf
 void strbuf_free(strbuf *sb);
 
-// returns len no NULL-check.
+// returns sb->len. no NULL-check.
 size_t strbuf_len(const strbuf *sb);
 
-// returns data. no NULL-check.
+// returns sb->data. no NULL-check.
 const char *strbuf_cstr(const strbuf *sb);
 
-// NOTE: '\\0' is not part of the string length.
+// reserves more than `needed` bytes for `*sb`
+// NOTE: when reserving, make sure to account for `\0`
 strbuf_err strbuf_reserve(strbuf *sb, size_t needed);
 
 // sets len = 0, data[0] = '\0', and cap is unchanged.
@@ -92,7 +106,7 @@ strbuf_err strbuf_reverse(strbuf *sb);
 strbuf_err strbuf_copy(strbuf *src, strbuf *dst);
 
 // constructs `*sb` from `*lit`.
-// NOTE: `*sb` MUST NOT BE INITIALISED.
+// NOTE: `*sb` should either be ZERO-INITIALIZED or PREVIOUSLY FREED.
 strbuf_err strbuf_from_strlit(strbuf *sb, const char *lit);
 
 #endif
