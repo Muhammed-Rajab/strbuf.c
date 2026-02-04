@@ -110,6 +110,8 @@ strbuf_err strbuf_append_n(strbuf *sb, const char *s, size_t n) {
 }
 
 strbuf_err strbuf_append(strbuf *sb, const char *s) {
+  if (!s)
+    return STRBUF_ERR_INVALID;
   return strbuf_append_n(sb, s, strlen(s));
 }
 
